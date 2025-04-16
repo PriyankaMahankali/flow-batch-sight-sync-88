@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import LeaderboardPage from "./pages/Leaderboard";
 import BadgesPage from "./pages/Badges";
 import TrendsPage from "./pages/Trends";
+import SettingsPage from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/badges" element={<BadgesPage />} />
           <Route path="/trends" element={<TrendsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
