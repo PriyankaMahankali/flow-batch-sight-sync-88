@@ -3,22 +3,29 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Droplet } from 'lucide-react';
-import { getTodayUsage, currentUserId } from '@/lib/firebase';
+import { getTodayUsage, currentUserId, fetchUser } from '@/lib/firebase';
 
 export function WaterUsageSummary() {
   const [usage, setUsage] = useState(0);
+  const [dailyTarget, setDailyTarget] = useState(150); // Default value
   const [loading, setLoading] = useState(true);
-  const dailyTarget = 150; // Liters
   const percentUsed = Math.min(100, Math.round((usage / dailyTarget) * 100));
   
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Get today's usage
         const todayUsage = await getTodayUsage(currentUserId);
         setUsage(todayUsage);
+        
+        // Get user's daily target setting
+        const user = await fetchUser(currentUserId);
+        if (user && user.dailyTarget) {
+          setDailyTarget(user.dailyTarget);
+        }
       } catch (error) {
-        console.error("Failed to fetch today's usage:", error);
+        console.error("Failed to fetch water usage data:", error);
       } finally {
         setLoading(false);
       }

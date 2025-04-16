@@ -1,4 +1,3 @@
-
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get, set, push, update, remove } from "firebase/database";
 import type { WaterUsageData, User, Badge, DailyConsumption, AreaConsumption } from "@/types/water-usage";
@@ -11,6 +10,9 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+
+// Export these functions for use in other components
+export { ref, update, getDatabase };
 
 // Water usage data functions
 export async function fetchWaterUsageData(userId: string): Promise<WaterUsageData[]> {

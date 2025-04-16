@@ -10,9 +10,16 @@ export interface WaterUsageData {
 export interface User {
   id: string;
   name: string;
+  email?: string;
+  dailyTarget?: number;
   totalUsage: number;
   badges: Badge[];
   avatar?: string;
+  preferences?: {
+    notifications?: boolean;
+    darkMode?: boolean;
+    dataSharing?: boolean;
+  };
 }
 
 export interface Badge {
