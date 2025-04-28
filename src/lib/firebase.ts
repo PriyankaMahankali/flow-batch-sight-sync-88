@@ -238,29 +238,54 @@ export async function getTodayUsage(userId: string): Promise<number> {
   }
 }
 
-// New function to listen to water usage data in real-time
-export function subscribeToWaterUsageData(userId: string, callback: (data: WaterUsageData[]) => void) {
-  const waterUsageRef = ref(database, 'WaterConsumed');
-  
-  const listener = onValue(waterUsageRef, (snapshot) => {
+export async function fetchWaterUsageData(userId: string): Promise<WaterUsageData[]> {
+  try {
+    const waterUsageRef = ref(database, 'WaterFlowData~2F-OLeW-w1VpcgRox5xINf');
+    const snapshot = await get(waterUsageRef);
+    
     if (snapshot.exists()) {
       const data = snapshot.val();
-      const userWaterData = Object.keys(data)
+      return Object.keys(data)
+        .map(key => ({
+          id: key,
+          waterConsumed: data[key].WaterConsumed, // Explicitly accessing WaterConsumed
+          ...data[key] // You can spread other properties if needed
+        }))
+        .filter(item => item.userId === userId);  // filter based on the userId
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error fetching water usage data:", error);
+    return [];
+  }
+}
+
+
+// New function to listen to water usage data in real-time
+export async function fetchWaterUsageData(userId: string): Promise<WaterUsageData[]> {
+  try {
+    // Update reference path with the new path you mentioned
+    const waterUsageRef = ref(database, 'WaterFlowData~2F-OLeW-w1VpcgRox5xINf');
+    const snapshot = await get(waterUsageRef);
+    
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      return Object.keys(data)
         .map(key => ({
           id: key,
           ...data[key]
         }))
-        .filter(item => item.userId === userId);
-      
-      callback(userWaterData);
-    } else {
-      callback([]);
+        .filter(item => item.userId === userId);  // filter based on the userId
     }
-  });
-  
-  // Return function to unsubscribe
-  return () => off(waterUsageRef);
+    
+    return [];
+  } catch (error) {
+    console.error("Error fetching water usage data:", error);
+    return [];
+  }
 }
+
 
 // Initialize Firebase with sample data if needed
 export async function initializeFirebaseWithSampleData() {
