@@ -1,4 +1,6 @@
 
+import { useEffect } from 'react';
+
 // Custom event system for water consumption tracking
 
 type WaterConsumptionEventDetail = {
@@ -45,8 +47,6 @@ export function addWaterConsumedListener(
 export function useWaterConsumedListener(
   callback: (event: WaterConsumptionEvent) => void
 ): void {
-  import { useEffect } from 'react';
-  
   useEffect(() => {
     const removeListener = addWaterConsumedListener(callback);
     return removeListener;
