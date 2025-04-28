@@ -1,8 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { fetchDailyConsumption, currentUserId } from '@/lib/firebase';
-import { DailyConsumption } from '@/types/water-usage';
+import { subscribeToWaterUsageData, currentUserId } from '@/lib/firebase';
+import { DailyConsumption, WaterUsageData } from '@/types/water-usage';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export function WaterUsageChart() {
@@ -10,19 +10,32 @@ export function WaterUsageChart() {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const dailyData = await fetchDailyConsumption(currentUserId);
-        setData(dailyData);
-      } catch (error) {
-        console.error("Failed to fetch daily consumption:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
     
-    fetchData();
+    const unsubscribe = subscribeToWaterUsageData(currentUserId, (waterUsageData) => {
+      // Group by date and sum liters
+      const consumptionByDate = waterUsageData.reduce((acc, item) => {
+        const date = item.date.split('T')[0];
+        if (!acc[date]) {
+          acc[date] = 0;
+        }
+        acc[date] += item.liters;
+        return acc;
+      }, {} as Record<string, number>);
+      
+      // Convert to array and sort by date
+      const dailyData = Object.keys(consumptionByDate)
+        .map(date => ({
+          date,
+          liters: consumptionByDate[date]
+        }))
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      
+      setData(dailyData);
+      setLoading(false);
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   const formattedData = data.map(item => ({

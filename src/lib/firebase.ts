@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, get, set, push, update, remove } from "firebase/database";
+import { getDatabase, ref, get, set, push, update, remove, onValue, off } from "firebase/database";
 import type { WaterUsageData, User, Badge, DailyConsumption, AreaConsumption } from "@/types/water-usage";
 
 // Firebase configuration
@@ -236,6 +236,30 @@ export async function getTodayUsage(userId: string): Promise<number> {
     console.error("Error fetching today's usage:", error);
     return 0;
   }
+}
+
+// New function to listen to water usage data in real-time
+export function subscribeToWaterUsageData(userId: string, callback: (data: WaterUsageData[]) => void) {
+  const waterUsageRef = ref(database, 'waterUsage');
+  
+  const listener = onValue(waterUsageRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const userWaterData = Object.keys(data)
+        .map(key => ({
+          id: key,
+          ...data[key]
+        }))
+        .filter(item => item.userId === userId);
+      
+      callback(userWaterData);
+    } else {
+      callback([]);
+    }
+  });
+  
+  // Return function to unsubscribe
+  return () => off(waterUsageRef);
 }
 
 // Initialize Firebase with sample data if needed
