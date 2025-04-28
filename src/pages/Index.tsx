@@ -6,6 +6,8 @@ import { AreaAnalysis } from '@/components/dashboard/AreaAnalysis';
 import { WaterUsageChart } from '@/components/dashboard/WaterUsageChart';
 import { BadgeDisplay } from '@/components/badges/BadgeDisplay';
 import { LeaderboardDisplay } from '@/components/leaderboard/LeaderboardDisplay';
+import { WaterUsageForm } from '@/components/dashboard/WaterUsageForm';
+import { WaterConsumptionListener } from '@/components/dashboard/WaterConsumptionListener';
 import { initializeFirebaseWithSampleData, getCurrentUserFromFirebase } from '@/lib/firebase';
 import { User } from '@/types/water-usage';
 
@@ -57,6 +59,11 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <WaterUsageSummary />
           <AreaAnalysis />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <WaterUsageForm />
+          <WaterConsumptionListener />
         </div>
         
         <div className="mb-6">
