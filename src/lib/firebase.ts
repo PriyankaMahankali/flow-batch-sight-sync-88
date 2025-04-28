@@ -17,7 +17,7 @@ export { ref, update, getDatabase };
 // Water usage data functions
 export async function fetchWaterUsageData(userId: string): Promise<WaterUsageData[]> {
   try {
-    const waterUsageRef = ref(database, 'waterUsage');
+    const waterUsageRef = ref(database, 'WaterConsumed');
     const snapshot = await get(waterUsageRef);
     
     if (snapshot.exists()) {
@@ -39,7 +39,7 @@ export async function fetchWaterUsageData(userId: string): Promise<WaterUsageDat
 
 export async function addWaterUsageData(data: Omit<WaterUsageData, "id">): Promise<string | null> {
   try {
-    const waterUsageRef = ref(database, 'waterUsage');
+    const waterUsageRef = ref(database, 'WaterConsumed');
     const newDataRef = push(waterUsageRef);
     await set(newDataRef, data);
     return newDataRef.key;
@@ -240,7 +240,7 @@ export async function getTodayUsage(userId: string): Promise<number> {
 
 // New function to listen to water usage data in real-time
 export function subscribeToWaterUsageData(userId: string, callback: (data: WaterUsageData[]) => void) {
-  const waterUsageRef = ref(database, 'waterUsage');
+  const waterUsageRef = ref(database, 'WaterConsumed');
   
   const listener = onValue(waterUsageRef, (snapshot) => {
     if (snapshot.exists()) {
@@ -369,7 +369,7 @@ export async function initializeFirebaseWithSampleData() {
     await set(ref(database, 'users'), users);
     await set(ref(database, 'badges'), badges);
     await set(ref(database, 'userBadges'), userBadges);
-    await set(ref(database, 'waterUsage'), waterUsage);
+    await set(ref(database, 'WaterConsumed'), waterUsage);
     
     console.log("Database initialized with sample data");
   } catch (error) {
